@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue'
 import TabManager from './TabManager.vue'
 import TabPane from './TabPane.vue'

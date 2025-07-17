@@ -1,29 +1,35 @@
-<script setup lang="ts">
-import { computed, onUnmounted, provide, reactive, ref, Ref, watch } from 'vue'
+<script setup>
+import { computed, onUnmounted, provide, reactive, ref, watch } from 'vue'
 import { useTabKey } from './injectionKey'
 
-const props = defineProps<{ modelValue?: number }>()
-const emit = defineEmits<{
-  (e: 'update:modelValue', tabId: number): void
-}>()
+const props = defineProps({
+  modelValue: {
+    type: Number,
+    default: undefined
+  }
+})
+
+const emit = defineEmits(['update:modelValue'])
 
 const localCurrentTab = ref(0)
 
-const currentTab = computed<number>({
-  get: () => props.modelValue ?? localCurrentTab.value,
+const currentTab = computed({
+  get() {
+    return props.modelValue !== undefined ? props.modelValue : localCurrentTab.value
+  },
   set(currentTab) {
-    if (props.modelValue == null) {
+    if (props.modelValue === undefined) {
       localCurrentTab.value = currentTab
     }
     emit('update:modelValue', currentTab)
-  },
+  }
 })
 
-const tabList = reactive(new Map<number, string>())
+const tabList = reactive(new Map())
 
 let currentId = 0
 
-provide(useTabKey, (title: Ref<string>) => {
+provide(useTabKey, (title) => {
   const myId = currentId++
 
   tabList.set(myId, title.value)
@@ -39,7 +45,7 @@ provide(useTabKey, (title: Ref<string>) => {
   const isVisible = computed(() => currentTab.value === myId)
 
   return {
-    isVisible,
+    isVisible
   }
 })
 </script>
