@@ -26,7 +26,7 @@ export const useDangoShop = defineStore('store-getters', {
 // Do not change this value
 const DANGO_PRICE = 350
 
+
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useDangoShop, import.meta.hot))
 }
-    
