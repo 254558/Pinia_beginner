@@ -26,6 +26,7 @@ export const useDango = defineStore('2.5.1 store-actions', {
 
       this.isEating = true
       do {
+        // 当 resolve() 被调用时，Promise 会从初始的 pending 状态切换为 fulfilled 状态
         await new Promise(resolve => setTimeout(resolve, interval))
         if (!this.isEating) return
         this.eatDango()
