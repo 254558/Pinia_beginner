@@ -2,31 +2,23 @@ import { useLocalStorage } from '@vueuse/core'
 import { defineStore, acceptHMRUpdate, skipHydrate } from 'pinia'
 import { computed } from 'vue'
 
-// 重新添加接口定义，为TodoItem提供类型信息
-export interface TodoItem {
-  id: string
-  text: string
-  finished: boolean
-  createdAt: number
-}
-
 export const useTodosStore = defineStore('todos', () => {
-  // 恢复泛型类型定义，指定list为TodoItem数组
-  const list = skipHydrate(useLocalStorage<TodoItem[]>('mastering-pinia-3.4 todolist', []))
+  // 移除了TypeScript的泛型类型定义
+  const list = skipHydrate(useLocalStorage('mastering-pinia-3.4 todolist', []))
 
-  // 为计算属性添加返回类型
-  const finished = computed<TodoItem[]>(() => list.value.filter(todo => todo.finished))
-  const unfinished = computed<TodoItem[]>(() => list.value.filter(todo => !todo.finished))
+  // 移除了计算属性的返回类型定义
+  const finished = computed(() => list.value.filter(todo => todo.finished))
+  const unfinished = computed(() => list.value.filter(todo => !todo.finished))
 
-  const mostRecent = computed<TodoItem | undefined>(() => {
+  const mostRecent = computed(() => {
     return list.value
       .slice()
       .sort((a, b) => b.createdAt - a.createdAt)
       .at(0)
   })
 
-  // 为函数参数和返回值添加类型
-  function add(text: string): void {
+  // 移除了函数参数的类型定义
+  function add(text) {
     list.value.push({
       id: crypto.randomUUID(),
       text,
@@ -35,14 +27,14 @@ export const useTodosStore = defineStore('todos', () => {
     })
   }
 
-  function update(updatedTodo: TodoItem): void {
+  function update(updatedTodo) {
     const index = list.value.findIndex(todo => todo.id === updatedTodo.id)
     if (index > -1) {
       list.value.splice(index, 1, updatedTodo)
     }
   }
 
-  function remove(id: string): void {
+  function remove(id) {
     const index = list.value.findIndex(todo => todo.id === id)
     if (index > -1) {
       list.value.splice(index, 1)
@@ -54,10 +46,14 @@ export const useTodosStore = defineStore('todos', () => {
     finished,
     unfinished,
     mostRecent,
+
     add,
     update,
     remove,
   }
 })
 
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useTodosStore, import.meta.hot))
+}
     
